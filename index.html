@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClearExam Education Platform</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --background: #f3f4f6;
+            --surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header Navigation */
+        header {
+            background-color: var(--surface);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+
+        .track-controls {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--background);
+            padding: 0.25rem;
+            border-radius: var(--radius);
+        }
+
+        .track-btn {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .track-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Main Layout */
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Left Panel: Dashboard */
+        .dashboard-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric-box {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Analytics Chart */
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chart-label {
+            width: 100px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .chart-bar-bg {
+            flex: 1;
+            height: 24px;
+            background: var(--background);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            background: var(--primary-light);
+            border-radius: 12px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Right Panel: Chat Interface */
+        .chat-section {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--primary);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background-color: var(--background);
+            color: var(--text-main);
+            border-bottom-left-radius: 2px;
+        }
+
+        /* RAG Process Animation */
+        .rag-pipeline {
+            align-self: flex-start;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 12px;
+            width: 85%;
+            display: none;
+        }
+
+        .rag-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .rag-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            visibility: hidden;
+        }
+
+        .rag-step.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .rag-step.active .spinner {
+            visibility: visible;
+        }
+
+        .rag-step.done .spinner {
+            visibility: visible;
+            animation: none;
+            border-color: var(--secondary);
+            background-color: var(--secondary);
+            position: relative;
+        }
+
+        /* Context Accordion */
+        details {
+            margin-top: 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        summary {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--primary);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: "▼";
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        details[open] summary::after {
+            content: "▲";
+        }
+
+        .context-content {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .context-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .context-item strong {
+            color: var(--text-main);
+        }
+
+        /* Input Area */
+        .chat-input-area {
+            padding: 1.5rem;
+            background-color: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .sample-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sample-chip {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sample-chip:hover {
+            background-color: #bae6fd;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .dashboard-section, .chat-section {
+                flex: none;
+                height: auto;
+            }
+            .chat-messages {
+                min-height: 400px;
+            }
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">ClearExam</div>
+        <div class="track-controls" id="trackControls">
+            <button class="track-btn active" data-track="Engineering">Engineering</button>
+            <button class="track-btn" data-track="Medical">Medical</button>
+            <button class="track-btn" data-track="Varsity">Varsity</button>
+            <button class="track-btn" data-track="IBA">IBA</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="dashboard-section">
+            <div class="card">
+                <div class="card-title">Progress Statistics</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-value" id="valExams">42</div>
+                        <div class="metric-label">Mock Exams Completed</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="valAccuracy">87%</div>
+                        <div class="metric-label">Average Accuracy</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="valReadiness">92%</div>
+                        <div class="metric-label">Admission Readiness Percentage</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="flex: 1;">
+                <div class="card-title">Subject Performance</div>
+                <div class="chart-container" id="chartContainer">
+                    </div>
+            </div>
+        </section>
+
+        <section class="chat-section">
+            <div class="chat-header">
+                <div class="card-title" style="margin: 0;">Interactive AI Tutor</div>
+                <div class="ai-status">
+                    <div class="status-dot"></div>
+                    System Online
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    Welcome to your ClearExam preparation space. I am your intelligent tutor grounded in verified past examination papers. Please select a sample question below or ask your own.
+                </div>
+
+                <div class="rag-pipeline" id="ragPipeline">
+                    <div class="rag-step" id="step1">
+                        <div class="spinner"></div>
+                        Semantic chunk retrieval from PostgreSQL pgvector question bank
+                    </div>
+                    <div class="rag-step" id="step2">
+                        <div class="spinner"></div>
+                        Context isolation and guardrail validation
+                    </div>
+                    <div class="rag-step" id="step3">
+                        <div class="spinner"></div>
+                        Text generation anchored strictly to verified documents
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="sample-questions" id="sampleQuestions">
+                    </div>
+                <div class="input-wrapper">
+                    <input type="text" class="input-field" id="userInput" placeholder="Type your academic question here...">
+                    <button class="send-btn" onclick="handleSend()">Send</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Database for tracks without hyphens
+        const database = {
+            Engineering: {
+                metrics: { exams: 42, accuracy: '87%', readiness: '92%' },
+                chart: [
+                    { subject: 'Physics', score: 90 },
+                    { subject: 'Chemistry', score: 85 },
+                    { subject: 'Mathematics', score: 88 }
+                ],
+                samples: [
+                    "Calculate the magnetic field at the center of a circular coil.",
+                    "Solve the differential equation dy by dx plus y equals e to the power x."
+                ],
+                ragResponse: {
+                    text: "Let us break this down step by step to ensure a complete understanding. First, apply the standard formula for the magnetic field at the center of a loop. The equation is B equals mu naught times I divided by two times the radius R. Ensure all units are converted to standard metric before calculating. This exact method was required in recent top tier admissions.",
+                    context: {
+                        year: "2021",
+                        uni: "Bangladesh University of Engineering and Technology",
+                        raw: "A circular coil of radius 10 centimeters carries a current of 5 Amperes. Calculate the magnetic field at its center."
+                    }
+                }
+            },
+            Medical: {
+                metrics: { exams: 56, accuracy: '91%', readiness: '95%' },
+                chart: [
+                    { subject: 'Biology', score: 94 },
+                    { subject: 'Chemistry', score: 89 },
+                    { subject: 'English', score: 82 }
+                ],
+                samples: [
+                    "Identify the exact location and function of the mitral valve.",
+                    "Explain the Krebs cycle in human cellular respiration."
+                ],
+                ragResponse: {
+                    text: "Here is the factual recall required for this topic. The mitral valve, also known as the bicuspid valve, is located between the left atrium and the left ventricle of the human heart. Its primary function is to prevent the backward flow of blood into the atrium when the ventricle contracts. Absolute anatomical precision is necessary for medical board evaluations.",
+                    context: {
+                        year: "2022",
+                        uni: "Dhaka Medical College",
+                        raw: "Specify the anatomical location of the mitral valve and describe its primary physiological function."
+                    }
+                }
+            },
+            Varsity: {
+                metrics: { exams: 30, accuracy: '80%', readiness: '85%' },
+                chart: [
+                    { subject: 'Physics', score: 82 },
+                    { subject: 'Mathematics', score: 78 },
+                    { subject: 'Bangla', score: 85 }
+                ],
+                samples: [
+                    "Calculate the derivative of sine x squared.",
+                    "Explain the photoelectric effect using standard physics principles."
+                ],
+                ragResponse: {
+                    text: "Applying the chain rule step by step yields the correct result. First, take the derivative of the outer function which is sine, resulting in cosine of x squared. Then multiply by the derivative of the inner function x squared, which is two x. The final answer is two x multiplied by cosine x squared.",
+                    context: {
+                        year: "2020",
+                        uni: "Dhaka University",
+                        raw: "Find the first derivative of the function f of x equals sine of x squared."
+                    }
+                }
+            },
+            IBA: {
+                metrics: { exams: 25, accuracy: '75%', readiness: '80%' },
+                chart: [
+                    { subject: 'Mathematics', score: 88 },
+                    { subject: 'English', score: 72 },
+                    { subject: 'Analytics', score: 70 }
+                ],
+                samples: [
+                    "If three workers complete a task in four days, how long for six workers?",
+                    "Identify the logical fallacy in the provided business argument."
+                ],
+                ragResponse: {
+                    text: "Let us solve this using inverse proportionality. The total effort required is three workers multiplied by four days, equating to twelve worker days. If you increase the workforce to six workers, you divide the total twelve worker days by six. The result is exactly two days.",
+                    context: {
+                        year: "2023",
+                        uni: "Institute of Business Administration",
+                        raw: "A construction team of three workers can finish a specific task in exactly four days. Calculate the time required if six workers are assigned to the identical task."
+                    }
+                }
+            }
+        };
+
+        let currentTrack = 'Engineering';
+        let isProcessing = false;
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTrackListeners();
+            updateDashboard(currentTrack);
+            
+            const inputField = document.getElementById('userInput');
+            inputField.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleSend();
+            });
+        });
+
+        function setupTrackListeners() {
+            const buttons = document.querySelectorAll('.track-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelector('.track-btn.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    currentTrack = e.target.getAttribute('data-track');
+                    updateDashboard(currentTrack);
+                });
+            });
+        }
+
+        function updateDashboard(track) {
+            const data = database[track];
+            
+            // Update Metrics
+            document.getElementById('valExams').innerText = data.metrics.exams;
+            document.getElementById('valAccuracy').innerText = data.metrics.accuracy;
+            document.getElementById('valReadiness').innerText = data.metrics.readiness;
+
+            // Update Chart
+            const chartContainer = document.getElementById('chartContainer');
+            chartContainer.innerHTML = '';
+            data.chart.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'chart-row';
+                
+                // Using timeout to trigger CSS animation after appending
+                row.innerHTML = `
+                    <div class="chart-label">${item.subject}</div>
+                    <div class="chart-bar-bg">
+                        <div class="chart-bar-fill" style="width: 0%">0%</div>
+                    </div>
+                `;
+                chartContainer.appendChild(row);
+
+                setTimeout(() => {
+                    const fill = row.querySelector('.chart-bar-fill');
+                    fill.style.width = item.score + '%';
+                    fill.innerText = item.score + '%';
+                }, 50);
+            });
+
+            // Update Sample Questions
+            const sampleContainer = document.getElementById('sampleQuestions');
+            sampleContainer.innerHTML = '';
+            data.samples.forEach(q => {
+                const chip = document.createElement('button');
+                chip.className = 'sample-chip';
+                chip.innerText = q;
+                chip.onclick = () => {
+                    document.getElementById('userInput').value = q;
+                    handleSend();
+                };
+                sampleContainer.appendChild(chip);
+            });
+        }
+
+        function handleSend() {
+            if (isProcessing) return;
+            
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Append User Message
+            appendMessage(text, 'user');
+            input.value = '';
+            
+            // Start RAG Simulation
+            simulateRAG();
+        }
+
+        function appendMessage(text, sender) {
+            const container = document.getElementById('chatMessages');
+            const msg = document.createElement('div');
+            msg.className = `message ${sender}`;
+            msg.innerHTML = text;
+            
+            // Insert before the pipeline animation
+            const pipeline = document.getElementById('ragPipeline');
+            container.insertBefore(msg, pipeline);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function simulateRAG() {
+            isProcessing = true;
+            const pipeline = document.getElementById('ragPipeline');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const container = document.getElementById('chatMessages');
+
+            // Reset pipeline UI
+            step1.className = 'rag-step active';
+            step2.className = 'rag-step';
+            step3.className = 'rag-step';
+            pipeline.style.display = 'block';
+            container.scrollTop = container.scrollHeight;
+
+            // Phase 1
+            setTimeout(() => {
+                step1.className = 'rag-step done';
+                step2.className = 'rag-step active';
+                
+                // Phase 2
+                setTimeout(() => {
+                    step2.className = 'rag-step done';
+                    step3.className = 'rag-step active';
+                    
+                    // Phase 3
+                    setTimeout(() => {
+                        step3.className = 'rag-step done';
+                        
+                        // Finish and show answer
+                        setTimeout(() => {
+                            pipeline.style.display = 'none';
+                            showAIResponse();
+                            isProcessing = false;
+                        }, 800);
+
+                    }, 1200);
+                }, 1200);
+            }, 1200);
+        }
+
+        function showAIResponse() {
+            const data = database[currentTrack].ragResponse;
+            const container = document.getElementById('chatMessages');
+            const pipeline = document.getElementById('ragPipeline');
+            
+            const msg = document.createElement('div');
+            msg.className = 'message ai';
+            
+            const answerText = document.createElement('div');
+            answerText.innerText = data.text;
+            msg.appendChild(answerText);
+
+            // Collapsible Context Box (No hyphens in text)
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.innerText = "Retrieved Document Context";
+            
+            const content = document.createElement('div');
+            content.className = 'context-content';
+            content.innerHTML = `
+                <div class="context-item"><strong>Examination Year:</strong> ${data.context.year}</div>
+                <div class="context-item"><strong>Institution:</strong> ${data.context.uni}</div>
+                <div class="context-item" style="margin-top: 8px;"><strong>Raw Source Question:</strong> ${data.context.raw}</div>
+            `;
+            
+            details.appendChild(summary);
+            details.appendChild(content);
+            msg.appendChild(details);
+
+            container.insertBefore(msg, pipeline);
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+</body>
+</html>
